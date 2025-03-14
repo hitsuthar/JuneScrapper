@@ -1,8 +1,12 @@
-package com.hitsuthar.junescrapper.service
+package com.hitsuthar.junescrapper
 
 import org.jsoup.Jsoup
+import org.springframework.cache.annotation.Cacheable
+import org.springframework.stereotype.Service
 
+@Service
 class WebScraperService {
+    @Cacheable("ddlLinks", key = "#movieName")
     fun scrapeDDLLinks(movieName: String): List<String> {
         val url = "https://example.com/search?q=$movieName" // Replace with the actual URL
         val document = Jsoup.connect(url).get()
