@@ -25,6 +25,8 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jsoup:jsoup:1.19.1")
     implementation("com.github.ben-manes.caffeine:caffeine:3.2.0")
+    implementation("org.slf4j:slf4j-api")
+//    implementation("org.springframework.boot:spring-boot-starter-webflux") // For reactive support
 
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
