@@ -1,6 +1,7 @@
 package com.hitsuthar.junescrapper.service
 
 import com.hitsuthar.junescrapper.providers.getMoviesDriveDDL
+import com.hitsuthar.junescrapper.providers.getOpenDirectory
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Service
 
@@ -9,7 +10,7 @@ data class MovieLinksResponse(
 )
 
 data class DDLStream(
-    val quality: String, // e.g., "480p", "720p", "1080p"
+    val title: String, // e.g., "480p", "720p", "1080p"
     val url: String      // e.g., "http://example.com/download1"
 )
 
@@ -18,5 +19,10 @@ class WebScraperService {
     @Cacheable("movieLinks")
     fun getMoviesDriveService(title: String, year: Int?): MovieLinksResponse {
         return getMoviesDriveDDL(title, year)
+    }
+
+    @Cacheable("movieLinks")
+    fun getOpenDirectoryService(query: String): MovieLinksResponse {
+        return getOpenDirectory(query)
     }
 }

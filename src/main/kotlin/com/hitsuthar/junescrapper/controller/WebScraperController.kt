@@ -17,11 +17,17 @@ class MovieController(private val webScraperService: WebScraperService) {
         @RequestParam name: String?,
         @RequestParam(required = false) year: Int?
     ): MovieLinksResponse {
-
         val links = name?.let { webScraperService.getMoviesDriveService(it, year) }
-        if (links != null) {
-            return links
-        }
+        if (links != null) return links
+        return MovieLinksResponse(emptyList())
+    }
+
+    @GetMapping("/od")
+    fun getOpenDirectoryDDL(
+        @RequestParam name: String?,
+    ): MovieLinksResponse {
+        val links = name?.let { webScraperService.getOpenDirectoryService(name) }
+        if (links != null) return links
         return MovieLinksResponse(emptyList())
     }
 }

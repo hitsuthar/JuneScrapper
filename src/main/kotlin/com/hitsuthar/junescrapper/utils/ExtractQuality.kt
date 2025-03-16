@@ -1,12 +1,11 @@
 package com.hitsuthar.junescrapper.utils
 
-fun ExtractQuality(name: String): String {
-    val regex = Regex("(\\d+(?:\\.\\d+)?(?:GB|MB)).*?(\\d+p|\\d+K)")
+fun getNameAndQuality(name: String): String {
+    val regex = Regex("(.*?)\\.(\\b\\d{3,4}p\\b|\\b4K\\b)\\..*")
     val matchResult = regex.find(name)
-//    if (matchResult != null) {
-        val size = matchResult?.groupValues?.get(1)
-        val quality = matchResult?.groupValues?.get(2)
-        return "Size: $size, Quality: $quality"
-//    } else return name
-
+    return if (matchResult != null) {
+        val movieName = matchResult.groupValues[1]
+        val quality = matchResult.groupValues[2]
+        return "$movieName $quality"
+    } else name
 }
