@@ -12,20 +12,15 @@ fun getOpenDirectory(query: String): MovieLinksResponse {
     val document: Document = Jsoup.connect(url).get()
 
     val ddlStreams: MutableList<DDLStream> = emptyList<DDLStream>().toMutableList()
-
     document.select("div.file-post-item").forEach { row ->
         val fileName = row.select("h5").text()
         val size = row.select("div span.bg-primary").last()?.text()?.replace(oldValue = " ", newValue = "")
-
 
         val copyLink = row.select("a").attr("onclick")
         val linkRegex = Regex("'([^']+)'")
         val link = linkRegex.find(copyLink)?.groupValues?.get(1)
 
         ddlStreams.add(DDLStream("${getNameAndQuality(fileName)} $size", link!!))
-
-
     }
     return MovieLinksResponse(ddlLinks = ddlStreams)
-
 }

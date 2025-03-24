@@ -1,6 +1,7 @@
 package com.hitsuthar.junescrapper.extractors
 
 import com.hitsuthar.junescrapper.service.DDLStream
+import com.hitsuthar.junescrapper.utils.fetchDocumentWithRetries
 import com.hitsuthar.junescrapper.utils.getNameAndQuality
 import org.jsoup.Jsoup
 
@@ -9,7 +10,9 @@ fun getHubCloudUrl(
 ): DDLStream {
     return try {
         var ddlLink: String = null.toString()
-        val doc = Jsoup.connect(url).get()
+        val doc = fetchDocumentWithRetries(url)
+
+        println(url)
 
         val header = doc.getElementsByTag("title").text()
         val size = doc.select("i[id=\"size\"]").first()?.text()?.replace(oldValue = " ", newValue = "")
@@ -19,15 +22,17 @@ fun getHubCloudUrl(
             Regex("var url = '([^']*)'").find(scriptTag)?.groupValues?.get(1) ?: ""
         } else doc.selectFirst("div.vd > center > a")?.attr("href") ?: ""
 
-        val document = Jsoup.connect(link).get()
+        val document = fetchDocumentWithRetries(link)
         val div = document.selectFirst("div.card-body")
         div?.select("h2 a.btn")?.mapNotNull { element ->
             val link1 = element.attr("href")
             val text = element.text()
+
             when {
+                text.contains("Pixel") -> ddlLink = link1
                 text.contains("Download [FSL Server]") -> ddlLink = link1
                 text.contains("Download File") -> ddlLink = link1
-                text.contains("PixelServer") -> ddlLink = link1
+
                 else -> null
             }
         }
