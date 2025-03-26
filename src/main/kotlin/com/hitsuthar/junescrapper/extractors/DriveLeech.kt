@@ -10,8 +10,8 @@ fun getDriveLeech(url: String): DDLStream {
         val DL = Jsoup.connect(url.replace("file","zfile")).get()
         val title = DL.select("div > h5").text()
         val ddl = DL.select("a.btn").attr("href")
-        println(getNameAndQuality(title))
-        DDLStream(getNameAndQuality(title), ddl)
+        println(title)
+        DDLStream(title, ddl)
     } catch (e: Exception) {
         DDLStream(null.toString(), null.toString())
     }

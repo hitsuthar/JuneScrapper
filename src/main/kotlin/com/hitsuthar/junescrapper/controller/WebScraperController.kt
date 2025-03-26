@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping("/movie")
+@RequestMapping("/api")
 class MovieController(private val webScraperService: WebScraperService) {
     @GetMapping("/moviesdrive")
     fun getMovieDriveDDL(
@@ -36,6 +36,15 @@ class MovieController(private val webScraperService: WebScraperService) {
     ): MovieLinksResponse {
         val links = name?.let { webScraperService.getUHDMoviesService(it, year) }
         if (links != null) return links
+        return MovieLinksResponse(emptyList())
+    }
+
+    @GetMapping("/moviesmod")
+    fun getMoviesModDL(
+        @RequestParam name: String?,
+        @RequestParam(required = false) year: Int?
+    ): MovieLinksResponse {
+        val links = name?.let { webScraperService.getMoviesModService(it, year) }
         return MovieLinksResponse(emptyList())
     }
 }

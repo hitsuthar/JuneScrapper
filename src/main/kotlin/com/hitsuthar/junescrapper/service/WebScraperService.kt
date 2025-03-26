@@ -1,6 +1,7 @@
 package com.hitsuthar.junescrapper.service
 
 import com.hitsuthar.junescrapper.providers.getMoviesDriveDDL
+import com.hitsuthar.junescrapper.providers.getMoviesMod
 import com.hitsuthar.junescrapper.providers.getOpenDirectory
 import com.hitsuthar.junescrapper.providers.getUHDMovies
 import org.springframework.cache.annotation.Cacheable
@@ -32,5 +33,9 @@ class WebScraperService {
         return getUHDMovies(title, year)
     }
 
+    @Cacheable("MoviesMod")
+    fun getMoviesModService(title: String, year: Int?): MovieLinksResponse {
+        return getMoviesMod(title, year)
+    }
 
 }
