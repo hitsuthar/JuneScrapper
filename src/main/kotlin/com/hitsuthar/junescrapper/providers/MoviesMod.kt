@@ -1,12 +1,10 @@
 package com.hitsuthar.junescrapper.providers
 
-import com.hitsuthar.junescrapper.extractors.getDriveLeech
 import com.hitsuthar.junescrapper.extractors.getDriveSeed
 import com.hitsuthar.junescrapper.extractors.getUnblockedGames
 import com.hitsuthar.junescrapper.service.DDLStream
 import com.hitsuthar.junescrapper.service.MovieLinksResponse
-import com.hitsuthar.junescrapper.utils.fetchDocumentWithRetries
-import org.jsoup.Jsoup
+import com.hitsuthar.junescrapper.utils.DocumentFetcher
 import org.jsoup.nodes.Document
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
@@ -15,12 +13,12 @@ fun formattedQuery(query: String): String {
     return query.trim().replace(" ", "+")
 }
 
-fun moviesModSearch(query: String): String? {
+fun moviesModSearch(query: String, fetcher: DocumentFetcher): String? {
     val baseUrl = "https://moviesmod.gift"
     val searchUrl = "$baseUrl/search/${formattedQuery(query)}"
 
     return try {
-        val document: Document = Jsoup.connect(searchUrl).get()
+        val document: Document = fetcher.fetchDocumentWithRetries(searchUrl)
         val firstResultUrl =
             document.select("div.post-cards article a").firstOrNull()?.attr("href")
         if (firstResultUrl.isNullOrBlank()) {
@@ -34,8 +32,8 @@ fun moviesModSearch(query: String): String? {
 }
 
 @OptIn(ExperimentalEncodingApi::class)
-fun getMoviesMod(title: String, year: Int?): MovieLinksResponse {
-    val searchResultUrl = moviesModSearch("${title.trim().replace(" ", "+")}+$year")
+fun getMoviesMod(title: String, year: Int?, fetcher: DocumentFetcher): MovieLinksResponse {
+    val searchResultUrl = moviesModSearch("${title.trim().replace(" ", "+")}+$year", fetcher)
     if (searchResultUrl.isNullOrBlank()) {
         return MovieLinksResponse(ddlLinks = emptyList()) // Return an empty list if no results
     }
@@ -43,18 +41,18 @@ fun getMoviesMod(title: String, year: Int?): MovieLinksResponse {
 
     val ddlStreams: MutableList<DDLStream> = emptyList<DDLStream>().toMutableList()
 
-    val document: Document = Jsoup.connect(searchResultUrl).timeout(100000000).get()
+    val document: Document = fetcher.fetchDocumentWithRetries(searchResultUrl)
     document.select("p a.maxbutton-1").parallelStream().map { element ->
         val link = """[?&]url=([^&]+)""".toRegex().find(element.attr("href"))?.groupValues?.get(1)
             ?.let { Base64.Default.decode(it).decodeToString() }
 //        println(link)
 
-        val ddlDocument: Document = Jsoup.connect(link!!).timeout(10000000).get()
+        val ddlDocument: Document = fetcher.fetchDocumentWithRetries(link!!)
         val ubGamesLink = ddlDocument.select("a.maxbutton-fast-server-gdrive").attr("href")
-        val newUrl = getUnblockedGames(ubGamesLink)
+        val newUrl = getUnblockedGames(ubGamesLink, fetcher)
         if (newUrl.contains("driveseed")) {
 //            println(newUrl)
-            ddlStreams.add(getDriveSeed(newUrl))
+            ddlStreams.add(getDriveSeed(newUrl, fetcher))
         }
 //        println(ubGamesLink)
     }.toList()

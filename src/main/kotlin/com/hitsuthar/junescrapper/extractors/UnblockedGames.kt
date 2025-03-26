@@ -1,12 +1,12 @@
 package com.hitsuthar.junescrapper.extractors
 
-import com.hitsuthar.junescrapper.utils.fetchDocumentWithRetries
+import com.hitsuthar.junescrapper.utils.DocumentFetcher
 import org.jsoup.Connection
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 
-fun getUnblockedGames(uRL: String): String {
-    val ddlDocument: Document = fetchDocumentWithRetries(uRL)
+fun getUnblockedGames(uRL: String, fetcher: DocumentFetcher): String {
+    val ddlDocument: Document = fetcher.fetchDocumentWithRetries(uRL)
     val form = ddlDocument.select("form#landing")
     val formUrl = form.attr("action")
     val wpHttpName = form.select("input").attr("name")

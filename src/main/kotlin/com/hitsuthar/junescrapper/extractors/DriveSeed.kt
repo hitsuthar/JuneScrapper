@@ -1,17 +1,14 @@
 package com.hitsuthar.junescrapper.extractors
 
-import com.fasterxml.jackson.module.kotlin.jsonMapper
 import com.hitsuthar.junescrapper.service.DDLStream
-import com.hitsuthar.junescrapper.utils.fetchDocumentWithRetries
-import com.hitsuthar.junescrapper.utils.formatBytes
+import com.hitsuthar.junescrapper.utils.DocumentFetcher
+import com.hitsuthar.junescrapper.utils.getNameAndQuality
 import org.jsoup.Connection
 import org.jsoup.Jsoup
-import org.springframework.boot.json.GsonJsonParser
-import org.springframework.boot.json.JsonParser
 
-fun getDriveSeed(url: String): DDLStream {
+fun getDriveSeed(url: String, fetcher: DocumentFetcher): DDLStream {
 //        println("hehe")
-    val DL = Jsoup.connect(url).get()
+    val DL = fetcher.fetchDocumentWithRetries(url)
     if (DL.select("a.btn-warning").text().contains(" Resume Cloud ")) {
         println(DL.select("a.btn-warning").attr("href"))
     }
@@ -42,5 +39,5 @@ fun getDriveSeed(url: String): DDLStream {
 //        val size: Long = resumeBotDoc.select("div.card-body li i.size").text().toLong()
 //        println(title)
 //        DDLStream(null.toString(), null.toString())
-    return DDLStream(title = title, ddlUrl!!)
+    return DDLStream(title = getNameAndQuality(title), ddlUrl!!)
 }

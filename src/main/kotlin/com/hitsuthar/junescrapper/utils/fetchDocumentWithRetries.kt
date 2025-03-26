@@ -1,19 +1,65 @@
 package com.hitsuthar.junescrapper.utils
 
+import okhttp3.OkHttpClient
+import okhttp3.Request
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import java.io.IOException
+import java.util.concurrent.TimeUnit
 
+class DocumentFetcher{
+    private val client by lazy {
+        OkHttpClient.Builder()
+            .connectTimeout(30, TimeUnit.SECONDS)
+            .readTimeout(30, TimeUnit.SECONDS)
+            .build()
+    }
 
-fun fetchDocumentWithRetries(
-    url: String,
-    timeout: Int = 120000,
-): Document {
-    return Jsoup.connect(url)
-        .header(
-            "User-Agent",
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.6778.86 Safari/537.36"
-        )
-        .timeout(timeout)
-        .get()
+    fun fetchDocumentWithRetries(
+        url: String,
+        maxRetries: Int = 3,
+        initialDelayMillis: Long = 1000,
+        customTimeoutSeconds: Long? = null
+    ): Document {
+        require(maxRetries > 0) { "Max retries must be positive" }
+        require(initialDelayMillis >= 0) { "Initial delay must be non-negative" }
 
+        // Use custom timeout if provided, otherwise use client's default
+        val effectiveClient = customTimeoutSeconds?.let { timeout ->
+            client.newBuilder()
+                .connectTimeout(timeout, TimeUnit.SECONDS)
+                .readTimeout(timeout, TimeUnit.SECONDS)
+                .build()
+        } ?: client
+
+        var lastError: Throwable? = null
+        var currentDelay = initialDelayMillis
+
+        repeat(maxRetries) { attempt ->
+            try {
+                val request = Request.Builder()
+                    .url(url)
+                    .addHeader("User-Agent", "DocumentFetcher/1.0")
+                    .build()
+
+                effectiveClient.newCall(request).execute().use { response ->
+                    if (!response.isSuccessful) {
+                        throw IOException("Unexpected HTTP code ${response.code} for $url")
+                    }
+
+                    val body = response.body?.string()
+                        ?: throw IOException("Empty response body from $url")
+                    return Jsoup.parse(body, url)
+                }
+            } catch (e: Exception) {
+                lastError = e
+                if (attempt < maxRetries - 1) {
+                    Thread.sleep(currentDelay)
+                    currentDelay *= 2 // Exponential backoff
+                }
+            }
+        }
+
+        throw IOException("Failed to fetch $url after $maxRetries attempts", lastError)
+    }
 }
