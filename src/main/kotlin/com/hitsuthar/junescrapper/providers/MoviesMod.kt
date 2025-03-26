@@ -44,12 +44,12 @@ fun getMoviesMod(title: String, year: Int?): MovieLinksResponse {
     val ddlStreams: MutableList<DDLStream> = emptyList<DDLStream>().toMutableList()
 
     val document: Document = Jsoup.connect(searchResultUrl).timeout(100000000).get()
-    document.select("p a.maxbutton-1").mapNotNull { element ->
+    document.select("p a.maxbutton-1").parallelStream().map { element ->
         val link = """[?&]url=([^&]+)""".toRegex().find(element.attr("href"))?.groupValues?.get(1)
-            ?.let { Base64.Default.decode(it).decodeToString() }.toString()
+            ?.let { Base64.Default.decode(it).decodeToString() }
 //        println(link)
 
-        val ddlDocument: Document = Jsoup.connect(link).timeout(10000000).get()
+        val ddlDocument: Document = Jsoup.connect(link!!).timeout(10000000).get()
         val ubGamesLink = ddlDocument.select("a.maxbutton-fast-server-gdrive").attr("href")
         val newUrl = getUnblockedGames(ubGamesLink)
         if (newUrl.contains("driveseed")) {
@@ -57,6 +57,6 @@ fun getMoviesMod(title: String, year: Int?): MovieLinksResponse {
             ddlStreams.add(getDriveSeed(newUrl))
         }
 //        println(ubGamesLink)
-    }
+    }.toList()
     return MovieLinksResponse(ddlStreams)
 }
