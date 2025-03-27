@@ -2,6 +2,7 @@ package com.hitsuthar.junescrapper.extractors
 
 import com.hitsuthar.junescrapper.service.DDLStream
 import com.hitsuthar.junescrapper.utils.DocumentFetcher
+import com.hitsuthar.junescrapper.utils.getNameAndQuality
 
 fun getHubCloudUrl(
     url: String,
@@ -25,6 +26,7 @@ fun extractFromHUbCloud(url: String, fetcher: DocumentFetcher): DDLStream? {
     val document = fetcher.fetchDocumentWithRetries(url)
     var ddl: String? = null
     val title = document.select("title").text()
+    val size = document.select("li i[id=size]").text().replace(oldValue = " ", newValue = "")
     document.selectFirst("div.card-body")?.select("h2 a.btn")?.map { element ->
         val link1 = element.attr("href")
 
@@ -38,6 +40,6 @@ fun extractFromHUbCloud(url: String, fetcher: DocumentFetcher): DDLStream? {
         }
     }
     return if (ddl != null) {
-        DDLStream(title, ddl!!)
+        DDLStream(getNameAndQuality(title) + " " + size, ddl!!)
     } else null
 }

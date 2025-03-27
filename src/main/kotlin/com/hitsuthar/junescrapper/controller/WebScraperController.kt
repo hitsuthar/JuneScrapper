@@ -59,4 +59,14 @@ class MovieController(private val webScraperService: WebScraperService) {
         return MovieLinksResponse(emptyList())
     }
 
+    @GetMapping("/full4movies")
+    fun getFull4MoviesDDL(
+        @RequestParam name: String?,
+        @RequestParam(required = false) year: Int?
+    ): MovieLinksResponse {
+        val links = name?.let { webScraperService.getFull4MoviesService(it, year) }
+        if (links != null) return links
+        return MovieLinksResponse(emptyList())
+    }
+
 }
