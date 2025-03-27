@@ -1,9 +1,6 @@
 package com.hitsuthar.junescrapper.service
 
-import com.hitsuthar.junescrapper.providers.getMoviesDriveDDL
-import com.hitsuthar.junescrapper.providers.getMoviesMod
-import com.hitsuthar.junescrapper.providers.getOpenDirectory
-import com.hitsuthar.junescrapper.providers.getUHDMovies
+import com.hitsuthar.junescrapper.providers.*
 import com.hitsuthar.junescrapper.utils.DocumentFetcher
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Service
@@ -20,6 +17,7 @@ data class DDLStream(
 @Service
 class WebScraperService {
     val fetcher = DocumentFetcher()
+
     @Cacheable("movieDrive")
     fun getMoviesDriveService(title: String, year: Int?): MovieLinksResponse {
         return getMoviesDriveDDL(title, year, fetcher)
@@ -38,6 +36,11 @@ class WebScraperService {
     @Cacheable("MoviesMod")
     fun getMoviesModService(title: String, year: Int?): MovieLinksResponse {
         return getMoviesMod(title, year, fetcher)
+    }
+
+    @Cacheable("RogMovies")
+    fun getRogMoviesService(title: String, year: Int?): MovieLinksResponse {
+        return getRogMovies(title, year, fetcher)
     }
 
 }

@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit
 class CacheConfig {
     @Bean
     fun cacheManager(): CacheManager {
-        val cacheManager = CaffeineCacheManager("movieDrive","UHD","OD","MoviesMod")
+        val cacheManager = CaffeineCacheManager("movieDrive","UHD","OD","MoviesMod","RogMovies")
         cacheManager.setCaffeine(Caffeine.newBuilder().expireAfterWrite(1, TimeUnit.DAYS).maximumSize(1000))
         return cacheManager
     }

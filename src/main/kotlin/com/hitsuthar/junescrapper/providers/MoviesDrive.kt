@@ -50,7 +50,7 @@ fun getMoviesDriveDDL(title: String, year: Int?, fetcher: DocumentFetcher): Movi
             relevantLinks.mapNotNull { innerButton ->
                 val source = innerButton.attr("href")
                 ddlStreams.add(
-                    getHubCloudUrl(source,fetcher)
+                    getHubCloudUrl(source,fetcher)!!
                 )
             }
         }.toList()

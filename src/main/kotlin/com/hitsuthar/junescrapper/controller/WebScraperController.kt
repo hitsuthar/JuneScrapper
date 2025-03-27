@@ -40,12 +40,23 @@ class MovieController(private val webScraperService: WebScraperService) {
     }
 
     @GetMapping("/moviesmod")
-    fun getMoviesModDL(
+    fun getMoviesModDLL(
         @RequestParam name: String?,
         @RequestParam(required = false) year: Int?
     ): MovieLinksResponse {
-        val links = name?.let { webScraperService.getMoviesModService(it, year,) }
+        val links = name?.let { webScraperService.getMoviesModService(it, year) }
         if (links != null) return links
         return MovieLinksResponse(emptyList())
     }
+
+    @GetMapping("/rogmovies")
+    fun getRogMoviesDDL(
+        @RequestParam name: String?,
+        @RequestParam(required = false) year: Int?
+    ): MovieLinksResponse {
+        val links = name?.let { webScraperService.getRogMoviesService(it, year) }
+        if (links != null) return links
+        return MovieLinksResponse(emptyList())
+    }
+
 }
