@@ -48,4 +48,9 @@ class WebScraperService {
         return getFull4Movies(title, year, fetcher)
     }
 
+    @Cacheable("VegaMovies")
+    fun getVegaMoviesService(title: String, year: Int?): MovieLinksResponse {
+        return getVegaMovies(title, year, fetcher)
+    }
+
 }
