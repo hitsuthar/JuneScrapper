@@ -10,14 +10,14 @@ fun moviesDriveSearch(query: String, fetcher: DocumentFetcher): String? {
     val baseUrl = "https://moviesdrive.guru"
     val formattedQuery = query.trim().replace(" ", "+")
     val searchUrl = "$baseUrl/?s=$formattedQuery"
-
+    
     return try {
         val document: Document = fetcher.fetchDocumentWithRetries(searchUrl)
-        val firstResultUrl =
-            document.select("ul.recent-movies > li figcaption a").firstOrNull()?.attr("href")
+        val firstResultUrl = document.select("ul.recent-movies > li > figure > a").firstOrNull()?.attr("href")
         if (firstResultUrl.isNullOrBlank()) {
             null
         } else {
+            println(firstResultUrl)
             firstResultUrl
         }
     } catch (e: Exception) {
@@ -36,22 +36,24 @@ fun getMoviesDriveDDL(title: String, year: Int?, fetcher: DocumentFetcher): Movi
         val ddlStreams: MutableList<DDLStream> = emptyList<DDLStream>().toMutableList()
 
         val document: Document = fetcher.fetchDocumentWithRetries(searchResultUrl)
-//        println(document)
         document.select("h5 > a").parallelStream().map { element ->
             val link = element.attr("href")
-            println(link)
             val ddlDocument: Document = fetcher.fetchDocumentWithRetries(link)
-            println(ddlDocument)
             val relevantLinks = ddlDocument.select("a").filter { innerLink ->
                 val href = innerLink.attr("href").lowercase()
-                println(href)
                 listOf("hubcloud").any { href.contains(it) }
             }
             relevantLinks.mapNotNull { innerButton ->
                 val source = innerButton.attr("href")
-                ddlStreams.add(
-                    getHubCloudUrl(source,fetcher)!!
-                )
+                if (source.contains("hubcloud")) {
+                    val ddl = getHubCloudUrl(source, fetcher)
+                    if (ddl != null) {
+                        println(ddl)
+                        ddlStreams.add(ddl)
+                    }
+
+                }
+
             }
         }.toList()
         return MovieLinksResponse(ddlLinks = ddlStreams)
