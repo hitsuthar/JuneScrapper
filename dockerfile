@@ -19,7 +19,7 @@ FROM eclipse-temurin:21-jre-jammy
 WORKDIR /app
 
 # Copy built JAR (adjust path if using custom jar name)
-COPY --from=builder /app/build/libs/*.jar app.jar
+COPY --from=builder /app/build/libs/*SNAPSHOT.jar app.jar
 
 # Railway-specific config
 ENV PORT=8080
