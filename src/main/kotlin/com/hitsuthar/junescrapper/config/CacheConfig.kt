@@ -12,8 +12,18 @@ class CacheConfig {
     @Bean
     fun cacheManager(): CacheManager {
         val cacheManager =
-            CaffeineCacheManager("movieDrive", "UHD", "OD", "MoviesMod", "RogMovies", "Full4Movies", "VegaMovies")
-        cacheManager.setCaffeine(Caffeine.newBuilder().expireAfterWrite(1, TimeUnit.DAYS).maximumSize(1000))
+            CaffeineCacheManager(
+                "movieDrive",
+                "UHD",
+                "OD",
+                "MoviesMod",
+                "RogMovies",
+                "Full4Movies",
+                "VegaMovies",
+                "KatMovieHD",
+                "LuxeCinema"
+            )
+        cacheManager.setCaffeine(Caffeine.newBuilder().expireAfterWrite(1, TimeUnit.DAYS).maximumSize(10000))
         return cacheManager
     }
 }

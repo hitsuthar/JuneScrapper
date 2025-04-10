@@ -2,12 +2,10 @@ package com.hitsuthar.junescrapper.utils
 
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
 import java.io.IOException
 import java.util.concurrent.TimeUnit
 
-class DocumentFetcher{
+class DocumentFetcher {
     private val client by lazy {
         OkHttpClient.Builder()
             .connectTimeout(30, TimeUnit.SECONDS)
@@ -15,12 +13,12 @@ class DocumentFetcher{
             .build()
     }
 
-    fun fetchDocumentWithRetries(
+    fun fetchWithRetries(
         url: String,
         maxRetries: Int = 3,
         initialDelayMillis: Long = 1000,
         customTimeoutSeconds: Long? = null
-    ): Document {
+    ): String {
         require(maxRetries > 0) { "Max retries must be positive" }
         require(initialDelayMillis >= 0) { "Initial delay must be non-negative" }
 
@@ -47,9 +45,9 @@ class DocumentFetcher{
                         throw IOException("Unexpected HTTP code ${response.code} for $url")
                     }
 
-                    val body = response.body?.string()
+                    return response.body?.string()
                         ?: throw IOException("Empty response body from $url")
-                    return Jsoup.parse(body, url)
+//                    return Jsoup.parse(body, url)
                 }
             } catch (e: Exception) {
                 lastError = e
@@ -62,4 +60,5 @@ class DocumentFetcher{
 
         throw IOException("Failed to fetch $url after $maxRetries attempts", lastError)
     }
+
 }

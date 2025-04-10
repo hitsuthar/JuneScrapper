@@ -10,8 +10,9 @@ data class MovieLinksResponse(
 )
 
 data class DDLStream(
-    val title: String, // e.g., "480p", "720p", "1080p"
-    val url: String      // e.g., "http://example.com/download1"
+    val name: String, // e.g., "480p", "720p", "1080p"
+    val url: String,      // e.g., "http://example.com/download1"
+    val size: String = ""
 )
 
 @Service
@@ -19,8 +20,8 @@ class WebScraperService {
     val fetcher = DocumentFetcher()
 
     @Cacheable("movieDrive")
-    fun getMoviesDriveService(title: String, year: Int?): MovieLinksResponse {
-        return getMoviesDriveDDL(title, year, fetcher)
+    fun getMoviesDriveService(title: String, year: Int?, type: String?, season: Int?, episode: Int?): MovieLinksResponse {
+        return getMoviesDriveDDL(title, year, type, season, episode, fetcher)
     }
 
     @Cacheable("OD")
@@ -29,28 +30,37 @@ class WebScraperService {
     }
 
     @Cacheable("UHD")
-    fun getUHDMoviesService(title: String, year: Int?): MovieLinksResponse {
-        return getUHDMovies(title, year, fetcher)
+    fun getUHDMoviesService(title: String, year: Int?, type: String?, season: Int?, episode: Int?): MovieLinksResponse {
+        return getUHDMovies(title, year, type, season, episode, fetcher)
     }
 
     @Cacheable("MoviesMod")
-    fun getMoviesModService(title: String, year: Int?): MovieLinksResponse {
-        return getMoviesMod(title, year, fetcher)
+    fun getMoviesModService(title: String, year: Int?, type: String?, season: Int?, episode: Int?): MovieLinksResponse {
+        return getMoviesMod(title, year, type, season, episode, fetcher)
     }
 
     @Cacheable("RogMovies")
-    fun getRogMoviesService(title: String, year: Int?): MovieLinksResponse {
-        return getRogMovies(title, year, fetcher)
+    fun getRogMoviesService(title: String, year: Int?, type: String?, season: Int?, episode: Int?): MovieLinksResponse {
+        return getRogMovies(title, year, type, season, episode, fetcher)
     }
 
     @Cacheable("Full4Movies")
-    fun getFull4MoviesService(title: String, year: Int?): MovieLinksResponse {
-        return getFull4Movies(title, year, fetcher)
+    fun getFull4MoviesService(title: String, year: Int?, type: String?, season: Int?, episode: Int?): MovieLinksResponse {
+        return getFull4Movies(title, year, type, season, episode, fetcher)
     }
 
     @Cacheable("VegaMovies")
-    fun getVegaMoviesService(title: String, year: Int?): MovieLinksResponse {
-        return getVegaMovies(title, year, fetcher)
+    fun getVegaMoviesService(title: String, year: Int?, type: String?, season: Int?, episode: Int?): MovieLinksResponse {
+        return getVegaMovies(title, year, type, season, episode, fetcher)
     }
 
+//    @Cacheable("KatMovieHD")
+//    fun getKatMovieHDService(title: String, year: Int?, type: String?, season: Int?, episode: Int?): MovieLinksResponse {
+//        return getKatMoviesHD(title, year, type, season, episode, fetcher)
+//    }
+
+    @Cacheable("LuxeCinema")
+    fun getLuxeCinemaService(title: String, year: Int?, type: String?, season: Int?, episode: Int?): MovieLinksResponse {
+        return getLuxeCinema(title, year, type, season, episode, fetcher)
+    }
 }

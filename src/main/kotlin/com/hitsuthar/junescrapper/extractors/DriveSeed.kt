@@ -3,12 +3,14 @@ package com.hitsuthar.junescrapper.extractors
 import com.hitsuthar.junescrapper.service.DDLStream
 import com.hitsuthar.junescrapper.utils.DocumentFetcher
 import com.hitsuthar.junescrapper.utils.getNameAndQuality
-import org.jsoup.Connection
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody.Companion.toRequestBody
 import org.jsoup.Jsoup
 
 fun getDriveSeed(url: String, fetcher: DocumentFetcher): DDLStream {
 //        println("hehe")
-    val DL = fetcher.fetchDocumentWithRetries(url)
+    val DL = Jsoup.parse(fetcher.fetchWithRetries(url))
     if (DL.select("a.btn-warning").text().contains(" Resume Cloud ")) {
         println(DL.select("a.btn-warning").attr("href"))
     }
@@ -26,12 +28,16 @@ fun getDriveSeed(url: String, fetcher: DocumentFetcher): DDLStream {
 
     val formData = mapOf(
         "token" to token,
-    )
+    ).toString().toRequestBody()
 
-    val postResponse = Jsoup.connect(workerSeedUrl).method(Connection.Method.POST)
-        .cookie("PHPSESSID", sessionID!!).data(formData).execute()
+    val client = OkHttpClient()
+    val postRequest =
+        Request.Builder().url(workerSeedUrl).header("Cookie", "PHPSESSID=" + sessionID!!).post(body = formData).build()
+//    var postResponse = Jsoup.connect(workerSeedUrl).method(Connection.Method.POST)
+//        .cookie("PHPSESSID", sessionID!!).data(formData).execute()
+    val postResponse = client.newCall(postRequest).execute()
 
-    val ddlUrl = """"url":"(.*?)"""".toRegex().find(postResponse.body().toString())?.groupValues?.get(1)
+    val ddlUrl = """"url":"(.*?)"""".toRegex().find(postResponse.body.toString())?.groupValues?.get(1)
         ?.replace(oldValue = "\\", newValue = "")
 //    println("Extracted URL: $ddlUrl")
 
@@ -39,5 +45,5 @@ fun getDriveSeed(url: String, fetcher: DocumentFetcher): DDLStream {
 //        val size: Long = resumeBotDoc.select("div.card-body li i.size").text().toLong()
 //        println(title)
 //        DDLStream(null.toString(), null.toString())
-    return DDLStream(title = getNameAndQuality(title), ddlUrl!!)
+    return DDLStream(title, ddlUrl!!)
 }

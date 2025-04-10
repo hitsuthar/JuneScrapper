@@ -1,9 +1,10 @@
 package com.hitsuthar.junescrapper.providers
 
-import com.hitsuthar.junescrapper.extractors.getHubCloudUrl
+import com.hitsuthar.junescrapper.extractors.Extractor
 import com.hitsuthar.junescrapper.service.DDLStream
 import com.hitsuthar.junescrapper.service.MovieLinksResponse
 import com.hitsuthar.junescrapper.utils.DocumentFetcher
+import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 
 fun moviesDriveSearch(query: String, fetcher: DocumentFetcher): String? {
@@ -12,7 +13,7 @@ fun moviesDriveSearch(query: String, fetcher: DocumentFetcher): String? {
     val searchUrl = "$baseUrl/?s=$formattedQuery"
 
     return try {
-        val document: Document = fetcher.fetchDocumentWithRetries(searchUrl)
+        val document: Document = Jsoup.parse(fetcher.fetchWithRetries(searchUrl))
         val firstResultUrl =
             document.select("ul.recent-movies > li figcaption a").firstOrNull()?.attr("href")
         if (firstResultUrl.isNullOrBlank()) {
@@ -26,7 +27,7 @@ fun moviesDriveSearch(query: String, fetcher: DocumentFetcher): String? {
 }
 
 
-fun getMoviesDriveDDL(title: String, year: Int?, fetcher: DocumentFetcher): MovieLinksResponse {
+fun getMoviesDriveDDL(title: String, year: Int?, type: String?, season: Int?, episode: Int?, fetcher: DocumentFetcher): MovieLinksResponse {
     try {
         val formattedSearchQuery = title.trim().replace(" ", "+")
         val searchResultUrl = moviesDriveSearch("$formattedSearchQuery+$year", fetcher)
@@ -35,22 +36,22 @@ fun getMoviesDriveDDL(title: String, year: Int?, fetcher: DocumentFetcher): Movi
         }
         val ddlStreams: MutableList<DDLStream> = emptyList<DDLStream>().toMutableList()
 
-        val document: Document = fetcher.fetchDocumentWithRetries(searchResultUrl)
+        val document: Document = Jsoup.parse(fetcher.fetchWithRetries(searchResultUrl))
 //        println(document)
         document.select("h5 > a").parallelStream().map { element ->
             val link = element.attr("href")
             println(link)
-            val ddlDocument: Document = fetcher.fetchDocumentWithRetries(link)
+            val ddlDocument: Document = Jsoup.parse(fetcher.fetchWithRetries(link))
             println(ddlDocument)
             val relevantLinks = ddlDocument.select("a").filter { innerLink ->
                 val href = innerLink.attr("href").lowercase()
                 println(href)
                 listOf("hubcloud").any { href.contains(it) }
             }
-            relevantLinks.mapNotNull { innerButton ->
+            relevantLinks.map { innerButton ->
                 val source = innerButton.attr("href")
                 ddlStreams.add(
-                    getHubCloudUrl(source,fetcher)!!
+                    Extractor().getHubCloudUrl(source, fetcher)!!
                 )
             }
         }.toList()

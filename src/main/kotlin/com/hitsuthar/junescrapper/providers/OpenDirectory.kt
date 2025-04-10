@@ -4,12 +4,13 @@ import com.hitsuthar.junescrapper.service.DDLStream
 import com.hitsuthar.junescrapper.service.MovieLinksResponse
 import com.hitsuthar.junescrapper.utils.DocumentFetcher
 import com.hitsuthar.junescrapper.utils.getNameAndQuality
+import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 
 fun getOpenDirectory(query: String, fetcher: DocumentFetcher): MovieLinksResponse {
     val formattedSearchQuery = query.trim().replace(" ", "+")
     val url = "https://filepursuit.com/pursuit?q=$formattedSearchQuery&type=video&sort=sizedesc"
-    val document: Document = fetcher.fetchDocumentWithRetries(url)
+    val document: Document = Jsoup.parse(fetcher.fetchWithRetries(url))
 
     val ddlStreams: MutableList<DDLStream> = emptyList<DDLStream>().toMutableList()
     document.select("div.file-post-item").forEach { row ->

@@ -12,11 +12,17 @@ import org.springframework.web.bind.annotation.RestController
 class MovieController(private val webScraperService: WebScraperService) {
     @GetMapping("/moviesdrive")
     fun getMovieDriveDDL(
-        @RequestParam name: String?,
-        @RequestParam(required = false) year: Int?
+        @RequestParam title: String?,
+        @RequestParam(required = false) year: Int?,
+        @RequestParam type: String?,
+        @RequestParam(required = false) season: Int?,
+        @RequestParam(required = false) episode: Int?,
     ): MovieLinksResponse {
-        val links = name?.let { webScraperService.getMoviesDriveService(it, year) }
-        if (links != null) return links
+        if (title == null || type == null) {
+            if (season == null || episode == null) return MovieLinksResponse(emptyList())
+        } else {
+            return webScraperService.getMoviesDriveService(title, year, type, season, episode)
+        }
         return MovieLinksResponse(emptyList())
     }
 
@@ -31,52 +37,109 @@ class MovieController(private val webScraperService: WebScraperService) {
 
     @GetMapping("/uhd")
     fun getUHDMoviesDDL(
-        @RequestParam name: String?,
-        @RequestParam(required = false) year: Int?
+        @RequestParam title: String?,
+        @RequestParam(required = false) year: Int?,
+        @RequestParam type: String?,
+        @RequestParam(required = false) season: Int?,
+        @RequestParam(required = false) episode: Int?,
     ): MovieLinksResponse {
-        val links = name?.let { webScraperService.getUHDMoviesService(it, year) }
-        if (links != null) return links
+        if (title == null || type == null) {
+            if (season == null || episode == null) return MovieLinksResponse(emptyList())
+        } else {
+            return webScraperService.getUHDMoviesService(title, year, type, season, episode)
+        }
         return MovieLinksResponse(emptyList())
     }
 
     @GetMapping("/moviesmod")
     fun getMoviesModDLL(
-        @RequestParam name: String?,
-        @RequestParam(required = false) year: Int?
+        @RequestParam title: String?,
+        @RequestParam(required = false) year: Int?,
+        @RequestParam type: String?,
+        @RequestParam(required = false) season: Int?,
+        @RequestParam(required = false) episode: Int?,
     ): MovieLinksResponse {
-        val links = name?.let { webScraperService.getMoviesModService(it, year) }
-        if (links != null) return links
+        if (title == null || type == null) {
+            if (season == null || episode == null) return MovieLinksResponse(emptyList())
+        } else {
+            return webScraperService.getMoviesModService(title, year, type, season, episode)
+        }
         return MovieLinksResponse(emptyList())
     }
 
     @GetMapping("/rogmovies")
     fun getRogMoviesDDL(
-        @RequestParam name: String?,
-        @RequestParam(required = false) year: Int?
+        @RequestParam title: String?,
+        @RequestParam(required = false) year: Int?,
+        @RequestParam type: String?,
+        @RequestParam(required = false) season: Int?,
+        @RequestParam(required = false) episode: Int?,
     ): MovieLinksResponse {
-        val links = name?.let { webScraperService.getRogMoviesService(it, year) }
-        if (links != null) return links
+        if (title == null || type == null) {
+            if (season == null || episode == null) return MovieLinksResponse(emptyList())
+        } else {
+            return webScraperService.getRogMoviesService(title, year, type, season, episode)
+        }
         return MovieLinksResponse(emptyList())
     }
 
     @GetMapping("/full4movies")
     fun getFull4MoviesDDL(
-        @RequestParam name: String?,
-        @RequestParam(required = false) year: Int?
+        @RequestParam title: String?,
+        @RequestParam(required = false) year: Int?,
+        @RequestParam type: String?,
+        @RequestParam(required = false) season: Int?,
+        @RequestParam(required = false) episode: Int?,
     ): MovieLinksResponse {
-        val links = name?.let { webScraperService.getFull4MoviesService(it, year) }
-        if (links != null) return links
+        if (title == null || type == null) {
+            if (season == null || episode == null) return MovieLinksResponse(emptyList())
+        } else {
+            return webScraperService.getFull4MoviesService(title, year, type, season, episode)
+        }
         return MovieLinksResponse(emptyList())
     }
 
     @GetMapping("/vegamovies")
     fun getVeggMoviesDDL(
-        @RequestParam name: String?,
-        @RequestParam(required = false) year: Int?
+        @RequestParam title: String?,
+        @RequestParam(required = false) year: Int?,
+        @RequestParam type: String?,
+        @RequestParam(required = false) season: Int?,
+        @RequestParam(required = false) episode: Int?,
     ): MovieLinksResponse {
-        val links = name?.let { webScraperService.getVegaMoviesService(it, year) }
-        if (links != null) return links
+        if (title == null || type == null) {
+            if (season == null || episode == null) return MovieLinksResponse(emptyList())
+        } else {
+            return webScraperService.getVegaMoviesService(title, year, type, season, episode)
+        }
         return MovieLinksResponse(emptyList())
     }
+
+    @GetMapping("/luxecinema")
+    fun getLuxeCinemaDDL(
+        @RequestParam title: String?,
+        @RequestParam(required = false) year: Int?,
+        @RequestParam type: String?,
+        @RequestParam(required = false) season: Int?,
+        @RequestParam(required = false) episode: Int?,
+    ): MovieLinksResponse {
+        if (title == null || type == null) {
+            if (season == null || episode == null) return MovieLinksResponse(emptyList())
+        } else {
+            return webScraperService.getLuxeCinemaService(title, year, type, season, episode)
+        }
+        return MovieLinksResponse(emptyList())
+    }
+
+//    @GetMapping("/katmoviehd")
+//    fun getKatMoviesDDL(
+//        @RequestParam name: String?,
+//        @RequestParam(required = false) year: Int?
+//    ): MovieLinksResponse {
+//        val links = name?.let { webScraperService.getKatMovieHDService(it, year) }
+//        if (links != null) return links
+//        return MovieLinksResponse(emptyList())
+//    }
+
 
 }

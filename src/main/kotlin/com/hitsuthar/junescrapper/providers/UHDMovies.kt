@@ -5,15 +5,16 @@ import com.hitsuthar.junescrapper.extractors.getUnblockedGames
 import com.hitsuthar.junescrapper.service.DDLStream
 import com.hitsuthar.junescrapper.service.MovieLinksResponse
 import com.hitsuthar.junescrapper.utils.DocumentFetcher
+import com.hitsuthar.junescrapper.utils.uHDMoviesUrl
+import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 
 fun uHDMoviesSearch(query: String, fetcher: DocumentFetcher): String? {
-    val baseUrl = "https://uhdmovies.wales"
     val formattedQuery = query.trim().replace(" ", "+")
-    val searchUrl = "$baseUrl/search/$formattedQuery+"
+    val searchUrl = "$uHDMoviesUrl/search/$formattedQuery+"
 
     return try {
-        val document: Document = fetcher.fetchDocumentWithRetries(searchUrl)
+        val document: Document = Jsoup.parse(fetcher.fetchWithRetries(searchUrl))
         val firstResultUrl =
             document.select("article.gridlove-post div.entry-image a").firstOrNull()?.attr("href")
         if (firstResultUrl.isNullOrBlank()) {
@@ -26,7 +27,7 @@ fun uHDMoviesSearch(query: String, fetcher: DocumentFetcher): String? {
     }
 }
 
-fun getUHDMovies(title: String, year: Int?, fetcher: DocumentFetcher): MovieLinksResponse {
+fun getUHDMovies(title: String, year: Int?, type: String?, season: Int?, episode: Int?, fetcher: DocumentFetcher): MovieLinksResponse {
 
     val searchResultUrl = uHDMoviesSearch("${title.trim().replace(" ", "+")}+$year", fetcher)
     if (searchResultUrl.isNullOrBlank()) {
@@ -34,7 +35,7 @@ fun getUHDMovies(title: String, year: Int?, fetcher: DocumentFetcher): MovieLink
     }
     val ddlStreams: MutableList<DDLStream> = emptyList<DDLStream>().toMutableList()
 
-    val document: Document = fetcher.fetchDocumentWithRetries(searchResultUrl)
+    val document: Document = Jsoup.parse(fetcher.fetchWithRetries(searchResultUrl))
 
     document.select("div.entry-content > p a.maxbutton-1").reversed().parallelStream().map { element ->
         val link = element.attr("href")

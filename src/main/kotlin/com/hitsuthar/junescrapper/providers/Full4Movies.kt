@@ -1,9 +1,10 @@
 package com.hitsuthar.junescrapper.providers
 
-import com.hitsuthar.junescrapper.extractors.getHubCloudUrl
+import com.hitsuthar.junescrapper.extractors.Extractor
 import com.hitsuthar.junescrapper.service.DDLStream
 import com.hitsuthar.junescrapper.service.MovieLinksResponse
 import com.hitsuthar.junescrapper.utils.DocumentFetcher
+import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 
 fun full4MoviesSearch(query: String, fetcher: DocumentFetcher): String? {
@@ -13,7 +14,7 @@ fun full4MoviesSearch(query: String, fetcher: DocumentFetcher): String? {
     println(searchUrl)
 
     return try {
-        val document: Document = fetcher.fetchDocumentWithRetries(searchUrl)
+        val document: Document = Jsoup.parse(fetcher.fetchWithRetries(searchUrl))
         val firstResultUrl = document.select("div.posts-wrapper article a").firstOrNull()?.attr("href")
         if (firstResultUrl.isNullOrBlank()) {
             null
@@ -25,17 +26,17 @@ fun full4MoviesSearch(query: String, fetcher: DocumentFetcher): String? {
     }
 }
 
-fun getFull4Movies(title: String, year: Int?, fetcher: DocumentFetcher): MovieLinksResponse {
+fun getFull4Movies(title: String, year: Int?, type: String?, season: Int?, episode: Int?, fetcher: DocumentFetcher): MovieLinksResponse {
     val searchResultUrl = full4MoviesSearch("${title.trim().replace(" ", "+")}+$year", fetcher)
     if (searchResultUrl.isNullOrBlank()) {
         return MovieLinksResponse(ddlLinks = emptyList()) // Return an empty list if no results
     }
     val ddlStreams: MutableList<DDLStream> = emptyList<DDLStream>().toMutableList()
 
-    val document: Document = fetcher.fetchDocumentWithRetries(searchResultUrl)
+    val document: Document = Jsoup.parse(fetcher.fetchWithRetries(searchResultUrl))
     document.select("div.wp-block-image > p a.fasc-button.fasc-size-large.dashicons-admin-links").parallelStream()
         .map { element ->
-            val hubcloud = fetcher.fetchDocumentWithRetries(element.attr("href")).select("button[id=download-btn]")
+            val hubcloud = Jsoup.parse(fetcher.fetchWithRetries(element.attr("href"))).select("button[id=download-btn]")
                 .firstOrNull { button ->
                     button.attr("onclick").contains("hubcloud", ignoreCase = true)
                 }?.attr("onclick")?.let {
@@ -44,7 +45,7 @@ fun getFull4Movies(title: String, year: Int?, fetcher: DocumentFetcher): MovieLi
                     )?.groupValues?.get(1)
                 }
             if (hubcloud != null) {
-                val ddl = getHubCloudUrl(hubcloud, fetcher)
+                val ddl = Extractor().getHubCloudUrl(hubcloud, fetcher)
                 if (ddl != null) ddlStreams.add(ddl)
             }
         }.toList()
