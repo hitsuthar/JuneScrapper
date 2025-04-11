@@ -1,6 +1,6 @@
 package com.hitsuthar.junescrapper.providers
 
-import com.hitsuthar.junescrapper.extractors.*
+import com.hitsuthar.junescrapper.extractors.Extractor
 import com.hitsuthar.junescrapper.service.DDLStream
 import com.hitsuthar.junescrapper.service.MovieLinksResponse
 import com.hitsuthar.junescrapper.utils.DocumentFetcher
@@ -9,16 +9,9 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonIgnoreUnknownKeys
-import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.RequestBody.Companion.toRequestBody
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
-import java.net.URI
-import java.net.URL
-import java.net.URLEncoder
 
 @OptIn(ExperimentalSerializationApi::class)
 @Serializable
@@ -60,10 +53,10 @@ fun getLuxeCinema(
         document.select("div.custom-links > div a").parallelStream().map { element ->
             val link = element.attr("href")
             println(link)
-            val hubCloud = Extractor().getHDMovie(link, fetcher).select("div.mirror-buttons a").first { element ->
+            val hubCloud = Extractor().getHDMovie(link, fetcher).select("div.mirror-buttons a").firstOrNull { element ->
                 element.text().contains("HubCloud", ignoreCase = true)
-            }.attr("href")
-            if (hubCloud.isNotBlank()) {
+            }?.attr("href")
+            if (hubCloud?.isNotBlank() == true) {
                 ddlStreams.add(Extractor().getHubCloudUrl(hubCloud, fetcher)!!)
             } else null
         }.toList()

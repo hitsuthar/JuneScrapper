@@ -30,6 +30,7 @@ dependencies {
     implementation("com.github.ben-manes.caffeine:caffeine:3.2.0")
     implementation("org.slf4j:slf4j-api")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
 //    implementation("org.springframework.boot:spring-boot-starter-webflux") // For reactive support
 
     developmentOnly("org.springframework.boot:spring-boot-devtools")
