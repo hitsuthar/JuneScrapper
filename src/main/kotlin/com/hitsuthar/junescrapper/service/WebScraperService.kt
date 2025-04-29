@@ -12,7 +12,7 @@ data class MovieLinksResponse(
 data class DDLStream(
     val name: String, // e.g., "480p", "720p", "1080p"
     val url: String,      // e.g., "http://example.com/download1"
-    val size: String = ""
+    val size: String? = null
 )
 
 @Service
