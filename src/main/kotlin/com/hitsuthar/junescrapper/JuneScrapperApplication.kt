@@ -8,5 +8,5 @@ import org.springframework.cache.annotation.EnableCaching
 @EnableCaching
 class JuneScrapperApplication
 fun main(args: Array<String>) {
-    runApplication<JuneScrapperApplication>(*args)
+	runApplication<JuneScrapperApplication>(*args)
 }
