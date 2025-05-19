@@ -68,7 +68,7 @@ fun getRogMovies(
 							a.text().contains("V-Cloud", ignoreCase = true) || a.text().contains("G-Direct", ignoreCase = true)
 						}.map { a: Element ->
 							val nextDriveURL = a.attr("href")
-							//					println(nextDriveURL)
+//												println(nextDriveURL)
 							val episodeH4 = Jsoup.parse(fetcher.fetchWithRetries(nextDriveURL)).select("h4").firstOrNull { h4 ->
 								h4.text().contains("Ep", ignoreCase = true)
 								h4.text().contains(episode.toString())
