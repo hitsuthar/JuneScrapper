@@ -61,7 +61,7 @@ fun getUHDMovies(
                     ddlStreams.add(getDriveLeech(ubGameLink, fetcher))
                 }
             }.toList()
-        } else {
+        } else if (type == "tv") {
             val episodesLink: MutableList<String> = emptyList<String>().toMutableList()
             document.select("div.entry-content h2").filter { element ->
                 element.text().contains("Season") && element.text().contains(season.toString()) && !element.text()
@@ -102,6 +102,8 @@ fun getUHDMovies(
                         ddlStreams.add(getDriveLeech(ubGameLink, fetcher))
                     }
                 }.toList()
+        } else {
+            MovieLinksResponse(ddlStreams)
         }
     }
 

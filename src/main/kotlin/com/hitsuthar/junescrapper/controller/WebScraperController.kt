@@ -48,6 +48,11 @@ class DiscoveryController {
 			)
 		)
 
+		apiList.add(ApiDescription(
+			"Rog Movies",
+			"/api/rogmovies",
+		))
+
 		return apiList
 	}
 }
