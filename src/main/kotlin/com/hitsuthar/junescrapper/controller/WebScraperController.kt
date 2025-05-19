@@ -10,8 +10,7 @@ import org.springframework.web.bind.annotation.RestController
 
 data class ApiDescription(
 	val name: String? = null,
-	val path: String? = null,
-	val params: Map<String, String>? = null,
+	val path: String? = null
 )
 
 @RestController
@@ -25,13 +24,6 @@ class DiscoveryController {
 			ApiDescription(
 				"Movies Drive",
 				"/api/moviesdrive",
-				params = mapOf(
-					"title" to "title",
-					"year" to "year",
-					"type" to "type",
-					"season" to "season",
-					"episode" to "episode",
-				)
 			)
 		)
 
@@ -42,12 +34,12 @@ class DiscoveryController {
 			)
 		)
 
-		apiList.add(
-			ApiDescription(
-				"UHD Movies",
-				"/api/uhd",
-			)
-		)
+//		apiList.add(
+//			ApiDescription(
+//				"UHD Movies",
+//				"/api/uhd",
+//			)
+//		)
 
 		apiList.add(
 			ApiDescription(
