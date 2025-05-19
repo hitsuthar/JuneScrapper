@@ -129,7 +129,8 @@ class MovieController(private val webScraperService: WebScraperService) {
 		if (title == null || type == null) {
 			if (season == null || episode == null) return MovieLinksResponse(emptyList())
 		} else {
-			return webScraperService.getRogMoviesService(title, year, type, season, episode)
+			println("season: $season")
+			return webScraperService.getRogMoviesService(title = title, year =  year, type =  type, season =  season, episode =  episode)
 		}
 		return MovieLinksResponse(emptyList())
 	}

@@ -41,7 +41,7 @@ class WebScraperService {
 
     @Cacheable("RogMovies")
     fun getRogMoviesService(title: String, year: Int?, type: String?, season: Int?, episode: Int?): MovieLinksResponse {
-        return getRogMovies(title, year, type, season, episode, fetcher)
+        return getRogMovies(title = title, year =  year, type =  type, season =  season, episode =  episode, fetcher =  fetcher)
     }
 
     @Cacheable("Full4Movies")
