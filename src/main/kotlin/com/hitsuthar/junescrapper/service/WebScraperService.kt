@@ -25,8 +25,8 @@ class WebScraperService {
     }
 
     @Cacheable("OD")
-    fun getOpenDirectoryService(query: String): MovieLinksResponse {
-        return getOpenDirectory(query, fetcher)
+    fun getOpenDirectoryService(title: String, year: Int?, type: String?, season: Int?, episode: Int?): MovieLinksResponse {
+        return getOpenDirectory(title, year, type, season, episode, fetcher)
     }
 
     @Cacheable("UHD")

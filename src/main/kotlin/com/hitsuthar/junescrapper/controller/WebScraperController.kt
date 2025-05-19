@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController
 data class ApiDescription(
 	val name: String? = null,
 	val path: String? = null,
+	val params: Map<String, String>? = null,
 )
 
 @RestController
@@ -24,6 +25,13 @@ class DiscoveryController {
 			ApiDescription(
 				"Movies Drive",
 				"/api/moviesdrive",
+				params = mapOf(
+					"title" to "title",
+					"year" to "year",
+					"type" to "type",
+					"season" to "season",
+					"episode" to "episode",
+				)
 			)
 		)
 
@@ -48,10 +56,12 @@ class DiscoveryController {
 			)
 		)
 
-		apiList.add(ApiDescription(
-			"Rog Movies",
-			"/api/rogmovies",
-		))
+		apiList.add(
+			ApiDescription(
+				"Rog Movies",
+				"/api/rogmovies",
+			)
+		)
 
 		return apiList
 	}
@@ -79,9 +89,13 @@ class MovieController(private val webScraperService: WebScraperService) {
 
 	@GetMapping("/od")
 	fun getOpenDirectoryDDL(
-		@RequestParam name: String?,
+		@RequestParam title: String?,
+		@RequestParam(required = false) year: Int?,
+		@RequestParam type: String?,
+		@RequestParam(required = false) season: Int?,
+		@RequestParam(required = false) episode: Int?,
 	): MovieLinksResponse {
-		val links = name?.let { webScraperService.getOpenDirectoryService(name) }
+		val links = title?.let { webScraperService.getOpenDirectoryService(title, year, type, season, episode) }
 		if (links != null) return links
 		return MovieLinksResponse(emptyList())
 	}
@@ -130,7 +144,13 @@ class MovieController(private val webScraperService: WebScraperService) {
 			if (season == null || episode == null) return MovieLinksResponse(emptyList())
 		} else {
 			println("season: $season")
-			return webScraperService.getRogMoviesService(title = title, year =  year, type =  type, season =  season, episode =  episode)
+			return webScraperService.getRogMoviesService(
+				title = title,
+				year = year,
+				type = type,
+				season = season,
+				episode = episode
+			)
 		}
 		return MovieLinksResponse(emptyList())
 	}
